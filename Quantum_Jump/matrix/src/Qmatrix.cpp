@@ -1,5 +1,4 @@
 #include "headers/Qmatrix.h"
-#include "headers/Constants.h"
 #include <iostream>
 
 //consturctors
@@ -20,6 +19,13 @@ Qmatrix::Qmatrix(const Qmatrix& rhs)
 	mat = rhs.mat;
 	rows = rhs.getRows();
 	cols = rhs.getCols();
+}
+
+Qmatrix::Qmatrix(const std::vector<std::vector<std::complex<double> > >& _inital)
+{
+	mat = _inital;
+	rows = _inital.size();
+	cols = _inital[0].size();
 }
 //Overloaded methods
 Qmatrix Qmatrix::operator+(const Qmatrix& rhs)
@@ -141,6 +147,8 @@ std::vector<std::complex<double> > Qmatrix::operator*(const std::vector<std::com
 	
 	return result;
 }
+
+
 //Matrix Methods 
 Qmatrix Qmatrix::transpose()
 {
@@ -156,6 +164,60 @@ Qmatrix Qmatrix::transpose()
 	}
 	return result;
 }
+
+Qmatrix Qmatrix::conjugate()
+{
+	Qmatrix result(rows,cols,ZERO);
+
+	for(unsigned int i = 0;i<rows;i++)
+	{
+		for(unsigned int j = 0;j<cols;j++)
+		{
+			result(i,j) = std::conj(this->mat[i][j]);
+		}
+	}
+	return result;
+}
+Qmatrix Qmatrix::hermitian_conj()
+{
+	Qmatrix result(rows,cols,ZERO);
+
+	for(unsigned int i = 0;i<rows;i++)
+	{
+		for(unsigned int j = 0;j<cols;j++)
+		{
+			result(i,j) = std::conj(this->mat[j][i]);
+		}
+	}
+	return result;
+}
+
+Qmatrix Qmatrix::tensor(const Qmatrix& _left, const Qmatrix& _right)
+{
+	unsigned int _rows = _left.getRows() * _right.getRows();
+	unsigned int _cols = _left.getCols() * _right.getCols();
+	Qmatrix result(_rows,_cols,ZERO);
+	    // i loops till rowas 
+    for (int i = 0; i < _left.getRows(); i++) 
+    { 
+        // k loops till rowb 
+        for (int k = 0; k < _right.getRows(); k++)
+        { 
+            // j loops till cola 
+            for (int j = 0; j < _left.getCols(); j++) 
+            { 
+                // l loops till colb 
+                for (int l = 0; l < _right.getCols(); l++)
+                { 
+                    // Each element of matrix A is 
+                    // multiplied by whole Matrix B 
+                    result(i + l + 1,j + k + 1) = _left.mat[i][j] * _right.mat[k][l]; 
+                } 
+            } 
+        } 
+    } 
+}
+
 //Access methods
 std::complex<double>& Qmatrix::operator()(const unsigned int& row,const unsigned int& col)
 {
@@ -173,9 +235,4 @@ unsigned int Qmatrix::getRows() const
 unsigned int Qmatrix::getCols() const
 {
 	return this-> cols;
-}
-
-int main()
-{
-	
 }
