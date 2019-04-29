@@ -58,9 +58,18 @@ public:
 
 	
 };
-
+//Non member Functions
 	//Tensor method veryuseful in quantum sims
 	Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right);
 	//Methods for bras and kets specfically
 	Qmatrix bra2ket(const Qmatrix& rhs);
 	Qmatrix ket2bra(const Qmatrix& rhs);
+
+	//Overloaded operators similar to ones above
+	Qmatrix operator+(double d,const Qmatrix rhs);
+	Qmatrix operator-(double d,const Qmatrix rhs);
+	Qmatrix operator*(double d,const Qmatrix rhs);
+
+	Qmatrix operator+(const std::complex<double>& d,const Qmatrix rhs);
+	Qmatrix operator-(const std::complex<double>& d,const Qmatrix rhs);
+	Qmatrix operator*(const std::complex<double>& d,const Qmatrix rhs);

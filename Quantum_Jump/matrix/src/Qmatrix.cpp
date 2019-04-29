@@ -269,3 +269,81 @@ Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right)
     } 
     return result;
 }
+
+Qmatrix operator+( double d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) + d;
+		}
+	}
+	return result;
+}
+
+Qmatrix operator-( double d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) - d;
+		}
+	}
+	return result;
+}
+
+Qmatrix operator*( double d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) * d;
+		}
+	}
+	return result;
+}
+
+Qmatrix operator+(const std::complex<double>& d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) + d;
+		}
+	}
+	return result;
+}
+
+Qmatrix operator-(const std::complex<double>& d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) - d;
+		}
+	}
+	return result;
+}
+
+Qmatrix operator*(const std::complex<double>& d,const Qmatrix rhs)
+{
+	Qmatrix result(rhs.getRows(),rhs.getCols(),ZERO);
+	for (unsigned int i = 0; i< rhs.getRows();i++)
+	{
+		for( unsigned int j =0;j<rhs.getCols();j++)
+		{
+			result(i,j) = rhs(i,j) * d;
+		}
+	}
+	return result;
+}

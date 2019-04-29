@@ -7,7 +7,11 @@ Date: 27/04/19
 #include "Qmatrix.h"
 
 Qmatrix basis(int n, int lvl);
+
 Qmatrix PauliX();
 Qmatrix PauliY();
 Qmatrix PauliZ();
+Qmatrix sigmaP();
+Qmatrix sigmaM();
+
 Qmatrix destory(unsigned int);

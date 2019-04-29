@@ -71,3 +71,24 @@ Qmatrix destory(unsigned int n)
 	Qmatrix Destory(destory);
 	return Destory;
 }
+
+Qmatrix sigmaP()
+{
+	std::complex<double> _ZERO (0.0,0.0);
+	std::complex<double> _ONE (1.0,0.0);
+	std::vector<std::complex<double> > sub_mat (2,_ZERO);
+	std::vector<std::vector<std::complex<double> > > sPlus (2,sub_mat);
+	sPlus[0][1] = _ONE;
+	Qmatrix SPlus(sPlus);
+	return SPlus;
+}
+Qmatrix sigmaM()
+{
+	std::complex<double> _ZERO (0.0,0.0);
+	std::complex<double> _ONE (1.0,0.0);
+	std::vector<std::complex<double> > sub_mat (2,_ZERO);
+	std::vector<std::vector<std::complex<double> > > sMinus (2,sub_mat);
+	sMinus[1][0] = _ONE;
+	Qmatrix SMinus(sMinus);
+	return SMinus;
+}
