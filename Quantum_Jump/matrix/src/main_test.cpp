@@ -16,9 +16,9 @@ int main()
 	Qmatrix psi0 = basis(2,0);
 	//Define a vector of collapse operators
 	std::vector<Qmatrix> collapse;
-	collapse.push_back(0.3 * a);
+	collapse.push_back(0.3 * a.hermitian_conj());
 	//Define the time stpes 
-	double delta_t = 0.01;
+	double delta_t = 0.1;
 
 	//Evolve with the Monte carlo function
 	mcSolve(H,psi0,collapse,delta_t);
@@ -35,5 +35,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	//Define the evolved state 
 	Qmatrix Evolved(inital);
 	//Evolve the state
-	Evolved = Evolved - (_ONEI * dt) * H * inital;
+	//Will need to add in the loops later though
+	Evolved = Evolved - (_ONEI * dt) * H * inital + (dt * 0.5) * Cps[0].hermitian_conj()* Cps[0] * inital;
+	std::cout << Evolved;
 }
