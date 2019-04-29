@@ -1,5 +1,5 @@
 #include "headers/Qmatrix.h"
-#include <iostream>
+#include "headers/Constants.h"
 
 //consturctors
 Qmatrix::Qmatrix(unsigned int _rows, unsigned int _cols, const std::complex<double>& _inital)
@@ -79,11 +79,12 @@ Qmatrix Qmatrix::operator-=(const Qmatrix& rhs)
 
 Qmatrix Qmatrix::operator*(const Qmatrix& rhs)
 {
-	Qmatrix result(rows,cols,ZERO);
+
+	Qmatrix result(rows,rhs.getCols(),ZERO);
 
 	for (unsigned int i = 0; i< rows;i++)
 	{
-		for( unsigned int j =0;j<cols;j++)
+		for( unsigned int j =0;j<rhs.getCols();j++)
 		{
 			for(unsigned int k = 0; k<rows;k++)
 			{
@@ -152,7 +153,6 @@ std::vector<std::complex<double> > Qmatrix::operator*(const std::vector<std::com
 //Matrix Methods 
 Qmatrix Qmatrix::transpose()
 {
-
 	Qmatrix result(rows,cols,ZERO);
 
 	for(unsigned int i = 0;i<rows;i++)
@@ -192,32 +192,6 @@ Qmatrix Qmatrix::hermitian_conj()
 	return result;
 }
 
-Qmatrix Qmatrix::tensor(const Qmatrix& _left, const Qmatrix& _right)
-{
-	unsigned int _rows = _left.getRows() * _right.getRows();
-	unsigned int _cols = _left.getCols() * _right.getCols();
-	Qmatrix result(_rows,_cols,ZERO);
-	    // i loops till rowas 
-    for (int i = 0; i < _left.getRows(); i++) 
-    { 
-        // k loops till rowb 
-        for (int k = 0; k < _right.getRows(); k++)
-        { 
-            // j loops till cola 
-            for (int j = 0; j < _left.getCols(); j++) 
-            { 
-                // l loops till colb 
-                for (int l = 0; l < _right.getCols(); l++)
-                { 
-                    // Each element of matrix A is 
-                    // multiplied by whole Matrix B 
-                    result(i + l + 1,j + k + 1) = _left.mat[i][j] * _right.mat[k][l]; 
-                } 
-            } 
-        } 
-    } 
-}
-
 //Access methods
 std::complex<double>& Qmatrix::operator()(const unsigned int& row,const unsigned int& col)
 {
@@ -235,4 +209,63 @@ unsigned int Qmatrix::getRows() const
 unsigned int Qmatrix::getCols() const
 {
 	return this-> cols;
+}
+
+//non-member function
+
+Qmatrix bra2ket(const Qmatrix& rhs)
+{
+	unsigned int _rows = rhs.getRows();
+	unsigned int _cols = rhs.getCols();
+	Qmatrix result(_cols,_rows,ZERO);
+
+	for(unsigned int i = 0;i<_cols;i++)
+	{
+		for(unsigned int j = 0; j<_rows;j++)
+		{
+			result(i,j) = rhs(j,i);
+		}
+	}
+	return result;
+}
+Qmatrix ket2bra(const Qmatrix& rhs)
+{
+	unsigned int _rows = rhs.getRows();
+	unsigned int _cols = rhs.getCols();
+	Qmatrix result(_cols,_rows,ZERO);
+
+	for(unsigned int i = 0;i<_cols;i++)
+	{
+		for(unsigned int j = 0; j<_rows;j++)
+		{
+			result(i,j) = rhs(j,i);
+		}
+	}
+	return result;
+}
+
+
+Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right)
+{
+	unsigned int _rows = _left.getRows() * _right.getRows();
+	unsigned int _cols = _left.getCols() * _right.getCols();
+	Qmatrix result(_rows,_cols,ZERO);
+	// i loops till rowas 
+    for (int i = 0; i < _left.getRows(); i++) 
+    { 
+        // k loops till rowb 
+        for (int k = 0; k < _left.getCols(); k++)
+        { 
+            // j loops till cola 
+            for (int j = 0; j < _right.getRows(); j++) 
+            { 
+                // l loops till colb 
+                for (int l = 0; l < _right.getCols(); l++)
+                { 
+                	result((_left.getRows() * i) + j,(_left.getCols() * k) + l) = _left(i,k) * _right(j,l);
+                } 
+            } 
+        } 
+    } 
+    return result;
 }

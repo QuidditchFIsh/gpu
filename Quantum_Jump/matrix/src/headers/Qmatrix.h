@@ -1,5 +1,7 @@
+#include <iostream>
 #include <vector>
-#include "Constants.h"
+#include<complex>
+
 
 class Qmatrix 
 {
@@ -47,13 +49,18 @@ public:
 	Qmatrix conjugate();
 	Qmatrix hermitian_conj();//Defined as the transpose of the conjugate
 
-	//Tensor method veryuseful in quantum sims
-	Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right);
-
 	//Access the individual elements of the matrix
 	std::complex<double>& operator()(const unsigned int& row,const unsigned int& col);
 	const std::complex<double>& operator()(const unsigned int& row,const  unsigned int& col) const;
 	//Get Method for rows and cols
 	unsigned int getRows() const;
 	unsigned int getCols() const;
+
+	
 };
+
+	//Tensor method veryuseful in quantum sims
+	Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right);
+	//Methods for bras and kets specfically
+	Qmatrix bra2ket(const Qmatrix& rhs);
+	Qmatrix ket2bra(const Qmatrix& rhs);
