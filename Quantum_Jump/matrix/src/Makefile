@@ -1,15 +1,22 @@
+CXX = g++
+CXXFLAGS = -Wall -c
+LDFLAGS =
+SOURCES=Qmatrix.cpp operators.cpp main_test.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXE=qJUMP
 
-all: Qmatrix.o operators.o main_test.o
-	g++ Qmatrix.o operators.o main_test.o -o Qmatrix
+all:$(SOURCES) $(EXE)
 
-Qmatrix.o: Qmatrix.cpp headers/Qmatrix.h
-	g++ -c Qmatrix.cpp
-	
-operators.o: operators.cpp headers/operators.h
-	g++ -c operators.cpp
+#This i think is a function (kind of) which links all of the OBJECTS which are the object files into the
+#executable which is the $@ symbol which is the left hand side of the :
 
-main_test.o: main_test.cpp headers/main_test.h
-	g++ -c main_test.cpp
+$(EXE): $(OBJECTS)
+	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@
+#Below is called a suffix rule it is equivalent to %.cpp : %.o which takes all files with the .cpp extension 
+#and applies the rule below in this case will produce the line 
+#	g++ -Wall -c somthing.cpp -o somthing.o which compiles the .cpp file into a .o file 
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
 	rm *.o Qmatrix
