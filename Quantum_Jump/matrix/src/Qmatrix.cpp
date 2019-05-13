@@ -81,18 +81,16 @@ Qmatrix Qmatrix::operator*(const Qmatrix& rhs)
 {
 
 	Qmatrix result(rows,rhs.getCols(),ZERO);
-
 	for (unsigned int i = 0; i< rows;i++)
 	{
 		for( unsigned int j =0;j<rhs.getCols();j++)
 		{
-			for(unsigned int k = 0; k<rows;k++)
+			for(unsigned int k = 0; k<rhs.getRows();k++)
 			{
 				result(i,j) += this->mat[i][k] * rhs(k,j);
 			}
 		}
 	}
-	
 	return result;
 }
 
@@ -151,15 +149,16 @@ std::vector<std::complex<double> > Qmatrix::operator*(const std::vector<std::com
 
 
 //Matrix Methods 
+//only for square matricies
 Qmatrix Qmatrix::transpose()
 {
-	Qmatrix result(rows,cols,ZERO);
+	Qmatrix result(cols,rows,ZERO);
 
 	for(unsigned int i = 0;i<rows;i++)
 	{
 		for(unsigned int j = 0;j<cols;j++)
 		{
-			result(i,j) = this->mat[j][i];
+			result(j,i) = this->mat[i][j];
 		}
 	}
 	return result;
@@ -180,13 +179,13 @@ Qmatrix Qmatrix::conjugate()
 }
 Qmatrix Qmatrix::hermitian_conj()
 {
-	Qmatrix result(rows,cols,ZERO);
+	Qmatrix result(cols,rows,ZERO);
 
 	for(unsigned int i = 0;i<rows;i++)
 	{
 		for(unsigned int j = 0;j<cols;j++)
 		{
-			result(i,j) = std::conj(this->mat[j][i]);
+			result(j,i) = std::conj(this->mat[i][j]);
 		}
 	}
 	return result;
