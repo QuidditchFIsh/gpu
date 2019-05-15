@@ -3,26 +3,81 @@
 #define PI 3.141592655
 #define PI2 2*PI
 
+
 int main()
 {
 	
 	std::cout << "#####################  Begining Simulation  ####################\n";
 	//Define all of the parameters to be used
-	Qmatrix a = destory(2);
-	Qmatrix a_dag = a.hermitian_conj();
-	double omega = 5;
-	//Define the hamiltonian
-	Qmatrix H = omega * a_dag * a;
-	//Define the inital State
-	Qmatrix psi0 = basis(2,1);
-	//Define a vector of collapse operators
-	std::vector<Qmatrix> collapse;
-	collapse.push_back(0.3 * a);
-	//Define the time stpes 
-	double delta_t = 0.1;
+/*
+	//Size of the systems
+	int N0 = 8;
+	int N1 = 8;
+	int N2 = 8;
 
-	//Evolve with the Monte carlo function
-	mcSolve(H,psi0,collapse,delta_t);
+	//Defining the operators
+	Qmatrix q0 = tensor(destory(N0),Id(8));
+	q0 = tensor(q0,Id(8));
+
+	Qmatrix q1 = tensor(Id(8),destory(N1));
+	q1 = tensor(q1,Id(8));
+
+	Qmatrix q2 = tensor(Id(8),Id(8));
+	q2 = tensor(q2,destory(N2));
+
+	//Define the Hamliltonian
+
+	Qmatrix H = (q0 * q1.hermitian_conj() * q2.hermitian_conj() - q0.hermitian_conj() * q1 * q2);
+	
+	Qmatrix C0 = q0.hermitian_conj() * q0;
+	Qmatrix C1 = q1.hermitian_conj() * q1;
+	Qmatrix C2 = q2.hermitian_conj() * q2;
+
+
+	//Damping Rates
+	double gamma0 = 0.1;
+	double gamma1 = 0.1;
+	double gamma2 = 0.4;
+
+	C0 = sqrt(2.0 * gamma0) * q0;
+	C1 = sqrt(2.0 * gamma1) * q1;
+	C2 = sqrt(2.0 * gamma2) * q2;
+
+	//Define the vector of collapse operators
+	std::vector<Qmatrix> cps;
+	cps.push_back(C0);
+	cps.push_back(C1);
+	cps.push_back(C2);
+
+
+	//Inital state
+	Qmatrix psi0 = tensor(basis(N0,0),basis(N1,0));
+	psi0 = tensor(psi0,basis(N2,0));
+
+	double dt = 0.05;
+
+	//Begin the Monte Carlo Simulation
+
+	//mcSolve(H,psi0,cps,dt);
+*/
+
+	std::complex<double> ONEI (0.0,1.0);
+
+	Qmatrix H = 0.5 * 0.06 * (destory(2) + destory(2).hermitian_conj());
+	//- 0.5*0.01*(destory(2)*destory(2).hermitian_conj())
+
+	Qmatrix psi0 = basis(2,1);
+
+	std::vector<Qmatrix> cps;
+	cps.push_back(ONEI*0.5*0.01*destory(2).hermitian_conj());
+
+	double dt = 0.1;
+
+	std::cout << H << std::endl;
+	std::cout << cps[0] << std::endl;
+
+	mcSolve(H,psi0,cps,dt);
+
 
 	std::cout << "####################  Simulation Completed  ####################\n";
 	//Add timiing of simulation here
@@ -32,6 +87,7 @@ int main()
 
 void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 {
+	Qmatrix Expt = PauliZ();
 	//Define imaginary 1
 	std::complex<double> _ONEI (0.0,1.0);
 
@@ -39,14 +95,14 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	//Define the evolved state 
 	Qmatrix Evolved(inital);
 	//Evolve the state
-	for (int j = 0; j < 300;j++)
+	for (int j = 0; j < 1000;j++)
 	{
 		if(j == 0)
 		{
 			Evolved = Evolved - (_ONEI * dt) * H * inital;
 			for (int i = 0; i<Cps.size();i++)
 			{
-				Evolved =Evolved - ((dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * inital);
+				Evolved = Evolved - ((_ONEI * dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * inital);
 			}
 		}
 		else
@@ -54,7 +110,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 			Evolved = Evolved - (_ONEI * dt) * H * Evolved;
 			for (int i = 0; i<Cps.size();i++)
 			{
-				Evolved = Evolved - ((dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * Evolved);
+				Evolved = Evolved - ((_ONEI * dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * Evolved);
 			}	
 		}
 		//Now to calculate the different collapse probabilities
@@ -76,7 +132,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    double r = dis(gen);
 	    // Now need to test weather ot not a jump wil occur.
 	    
-
+	    //std::cout << deltaP << std::endl;
 	    if (deltaP < r) // No Jump has Occured
 	    {
 	    	// The state is now normalized and the whole process will start again
@@ -94,9 +150,10 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    	{
 	    		// if there is only 1 then we dont need to work out which jump occured
 	    		Evolved = Cps[0] *  Evolved * sqrt(dt / deltaP);
+	    		std::cout << "welp";
 	    	}
 	    }
 
-	    std::cout << Evolved;
+	    std::cout << expect(Evolved,Expt).imag() << std::endl;
 	}
 }

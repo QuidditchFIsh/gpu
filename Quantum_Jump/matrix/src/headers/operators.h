@@ -8,6 +8,8 @@ Date: 27/04/19
 
 Qmatrix basis(int n, int lvl);
 
+Qmatrix Id(int n);
+
 Qmatrix PauliX();
 Qmatrix PauliY();
 Qmatrix PauliZ();

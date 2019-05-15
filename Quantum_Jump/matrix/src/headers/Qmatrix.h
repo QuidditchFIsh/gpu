@@ -60,6 +60,10 @@ public:
 };
 //Non member Functions
 	//Tensor method veryuseful in quantum sims
+/*
+*Currently can only take two arguments will need
+*To change this in the future for ease ofuse
+*/
 	Qmatrix tensor(const Qmatrix& _left, const Qmatrix& _right);
 	//Methods for bras and kets specfically
 	Qmatrix bra2ket(const Qmatrix& rhs);
@@ -73,3 +77,5 @@ public:
 	Qmatrix operator+(const std::complex<double>& d,const Qmatrix rhs);
 	Qmatrix operator-(const std::complex<double>& d,const Qmatrix rhs);
 	Qmatrix operator*(const std::complex<double>& d,const Qmatrix rhs);
+
+	std::complex<double> expect( Qmatrix& _state,  Qmatrix& _operator);

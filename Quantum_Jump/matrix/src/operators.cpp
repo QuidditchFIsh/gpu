@@ -17,6 +17,20 @@ Qmatrix basis(int n, int lvl)
 
 }
 
+Qmatrix Id(int n)
+{
+	std::complex<double> _ZERO (0.0,0.0);
+	std::complex<double> _ONE (1.0,0.0);
+	std::vector<std::complex<double> > sub_mat(n,_ZERO);
+	std::vector<std::vector<std::complex<double> > >mat (n,sub_mat);
+
+	for(int i = 0;i<n;i++)
+	{
+		mat[i][i] = _ONE;
+	}
+
+	return Qmatrix(mat);
+}
 
 //Vectors for Pauli Matricies
 Qmatrix PauliX()

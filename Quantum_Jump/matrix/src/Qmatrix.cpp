@@ -346,3 +346,10 @@ Qmatrix operator*(const std::complex<double>& d,const Qmatrix rhs)
 	}
 	return result;
 }
+
+std::complex<double> expect(Qmatrix& _state, Qmatrix& _operator)
+{
+	Qmatrix res = _operator * _state;
+	res = _state.hermitian_conj() * res;
+	return res(0,0);
+}
