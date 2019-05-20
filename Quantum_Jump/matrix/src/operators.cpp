@@ -39,8 +39,8 @@ Qmatrix PauliX()
 	std::complex<double> _ONE (1.0,0.0);
 	std::vector<std::complex<double> > sub_mat (2,_ZERO);
 	std::vector<std::vector<std::complex<double> > > pauliX (2,sub_mat);
-	pauliX[0][1] = _ONE;
 	pauliX[1][0] = _ONE;
+	pauliX[0][1] = _ONE;
 	Qmatrix PauliX(pauliX);
 	return PauliX;
 }
@@ -64,9 +64,9 @@ Qmatrix PauliZ()
 	std::complex<double> _ONE (1.0,0.0);
 	std::vector<std::complex<double> > sub_mat (2,_ZERO);
 	std::vector<std::vector<std::complex<double> > > pauliZ (2,sub_mat);
-	pauliZ[1][0] = _ONE;
+	pauliZ[0][0] = _ONE;
 	_ONE*=-1;
-	pauliZ[0][1] = _ONE;
+	pauliZ[1][1] = _ONE;
 	Qmatrix PauliZ(pauliZ);
 	return PauliZ;
 }
@@ -80,7 +80,7 @@ Qmatrix destory(unsigned int n)
 	for (unsigned int i = 0; i < n - 1; i++)
 	{
 		_ONE = sqrt((double) i + 1);
-		destory[i][i+1] = _ONE;
+		destory[i+1][i] = _ONE;
 	}
 	Qmatrix Destory(destory);
 	return Destory;

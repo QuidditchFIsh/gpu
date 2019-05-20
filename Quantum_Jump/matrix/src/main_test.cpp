@@ -63,18 +63,15 @@ int main()
 
 	std::complex<double> ONEI (0.0,1.0);
 
-	Qmatrix H = 0.5 * 0.06 * (destory(2) + destory(2).hermitian_conj());
+	Qmatrix H = 0.5 * 0.6 * (destory(2) + destory(2).hermitian_conj());
 	//- 0.5*0.01*(destory(2)*destory(2).hermitian_conj())
 
 	Qmatrix psi0 = basis(2,1);
 
 	std::vector<Qmatrix> cps;
-	cps.push_back(ONEI*0.5*0.01*destory(2).hermitian_conj());
+	cps.push_back(0.5*0.1*destory(2));
 
-	double dt = 0.1;
-
-	std::cout << H << std::endl;
-	std::cout << cps[0] << std::endl;
+	double dt = 0.01;
 
 	mcSolve(H,psi0,cps,dt);
 
@@ -87,6 +84,8 @@ int main()
 
 void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 {
+	std::ofstream file;
+	file.open("Data.dat");
 	Qmatrix Expt = PauliZ();
 	//Define imaginary 1
 	std::complex<double> _ONEI (0.0,1.0);
@@ -95,14 +94,16 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	//Define the evolved state 
 	Qmatrix Evolved(inital);
 	//Evolve the state
-	for (int j = 0; j < 1000;j++)
+	for (int j = 0; j < 2000;j++)
 	{
 		if(j == 0)
 		{
 			Evolved = Evolved - (_ONEI * dt) * H * inital;
 			for (int i = 0; i<Cps.size();i++)
 			{
-				Evolved = Evolved - ((_ONEI * dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * inital);
+				//std::cout << Evolved << std::endl;
+				Evolved = Evolved - ((dt * 0.5) * Cps[i]* Cps[i].hermitian_conj() * inital);
+				//std::cout << Evolved << std::endl;
 			}
 		}
 		else
@@ -110,7 +111,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 			Evolved = Evolved - (_ONEI * dt) * H * Evolved;
 			for (int i = 0; i<Cps.size();i++)
 			{
-				Evolved = Evolved - ((_ONEI * dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * Evolved);
+				Evolved = Evolved - ((dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * Evolved);
 			}	
 		}
 		//Now to calculate the different collapse probabilities
@@ -153,7 +154,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    		std::cout << "welp";
 	    	}
 	    }
-
-	    std::cout << expect(Evolved,Expt).imag() << std::endl;
+	    std::cout << expect(Evolved,Expt).real() << std::endl;
+	    file << std::setprecision(10) <<  j << " " <<expect(Evolved,Expt).real() <<"\n"; 
 	}
 }
