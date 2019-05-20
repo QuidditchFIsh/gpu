@@ -63,13 +63,13 @@ int main()
 
 	std::complex<double> ONEI (0.0,1.0);
 
-	Qmatrix H = 0.5 * 0.6 * (destory(2) + destory(2).hermitian_conj());
+	Qmatrix H = 0.6 * (destory(2) + destory(2).hermitian_conj());
 	//- 0.5*0.01*(destory(2)*destory(2).hermitian_conj())
 
 	Qmatrix psi0 = basis(2,1);
 
 	std::vector<Qmatrix> cps;
-	cps.push_back(0.5*0.1*destory(2));
+	cps.push_back(0.1*destory(2));
 
 	double dt = 0.01;
 
@@ -102,7 +102,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 			for (int i = 0; i<Cps.size();i++)
 			{
 				//std::cout << Evolved << std::endl;
-				Evolved = Evolved - ((dt * 0.5) * Cps[i]* Cps[i].hermitian_conj() * inital);
+				Evolved = Evolved - ((dt*0.5) * Cps[i]* Cps[i].hermitian_conj() * inital);
 				//std::cout << Evolved << std::endl;
 			}
 		}
@@ -111,7 +111,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 			Evolved = Evolved - (_ONEI * dt) * H * Evolved;
 			for (int i = 0; i<Cps.size();i++)
 			{
-				Evolved = Evolved - ((dt * 0.5) * Cps[i].hermitian_conj()* Cps[i] * Evolved);
+				Evolved = Evolved - ((dt*0.5) * Cps[i]* Cps[i].hermitian_conj() * Evolved);
 			}	
 		}
 		//Now to calculate the different collapse probabilities
@@ -119,7 +119,7 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 
 		for (int i = 0; i < Cps.size();i++)
 		{
-			Qmatrix dpm = (Evolved.hermitian_conj() * Cps[i].hermitian_conj() * Cps[i] * Evolved);
+			Qmatrix dpm = (Evolved.hermitian_conj() * Cps[i] * Cps[i].hermitian_conj() * Evolved);
 			//std::cout << dpm(0,0).real();
 			cps_prob.push_back(dpm(0,0).real() * dt);
 		}
@@ -131,14 +131,13 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    std::uniform_real_distribution<> dis(0.0, 1.0);
 	    //std::cout << dis(gen) << ' ';
 	    double r = dis(gen);
-	    // Now need to test weather ot not a jump wil occur.
-	    
-	    //std::cout << deltaP << std::endl;
+	    // Now need to test weather ot not a jump wil occur.	
+
 	    if (deltaP < r) // No Jump has Occured
 	    {
 	    	// The state is now normalized and the whole process will start again
 	    	Evolved  = Evolved * (1/sqrt(1 - deltaP));
-	    
+	    	std::cout << (Evolved.hermitian_conj() * Evolved) << std::endl;
 	    }
 	    else // A Jump has therfore occured
 	    {
