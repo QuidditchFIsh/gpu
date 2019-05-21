@@ -63,18 +63,24 @@ int main()
 
 	std::complex<double> ONEI (0.0,1.0);
 
-	Qmatrix H = 0.6 * (destory(2) + destory(2).hermitian_conj());
+	//Qmatrix H = 0.6*destory(2).hermitian_conj()*destory(2) + (destory(2) + destory(2).hermitian_conj());
+	Qmatrix H =  0.6*(destory(2) + destory(2).hermitian_conj());
 	//- 0.5*0.01*(destory(2)*destory(2).hermitian_conj())
 
 	Qmatrix psi0 = basis(2,1);
 
 	std::vector<Qmatrix> cps;
-	cps.push_back(0.1*destory(2));
+	cps.push_back(destory(2));
 
 	double dt = 0.01;
+	double gamma = 0.1*0.1;
 
-	mcSolve(H,psi0,cps,dt);
+	//Timing
+	clock_t tstart = clock();
 
+	mcSolve(H,psi0,cps,dt,gamma);
+
+	printf("Time Taken: %.5fs\n", (double)(clock() - tstart)/CLOCKS_PER_SEC);
 
 	std::cout << "####################  Simulation Completed  ####################\n";
 	//Add timiing of simulation here
@@ -82,13 +88,17 @@ int main()
 	return 0;
 }
 
-void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
+void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt,double gamma)
 {
+
 	std::ofstream file;
 	file.open("Data.dat");
 	Qmatrix Expt = PauliZ();
+	file << std::setprecision(10) <<  0 << " " << expect(inital,Expt).real() <<"\n"; 
 	//Define imaginary 1
 	std::complex<double> _ONEI (0.0,1.0);
+
+	Qmatrix norm(inital.hermitian_conj() * inital);
 
 	//std::cout << H;
 	//Define the evolved state 
@@ -96,34 +106,33 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	//Evolve the state
 	for (int j = 0; j < 2000;j++)
 	{
-		if(j == 0)
-		{
-			Evolved = Evolved - (_ONEI * dt) * H * inital;
-			for (int i = 0; i<Cps.size();i++)
-			{
-				//std::cout << Evolved << std::endl;
-				Evolved = Evolved - ((dt*0.5) * Cps[i]* Cps[i].hermitian_conj() * inital);
-				//std::cout << Evolved << std::endl;
-			}
-		}
-		else
-		{
-			Evolved = Evolved - (_ONEI * dt) * H * Evolved;
-			for (int i = 0; i<Cps.size();i++)
-			{
-				Evolved = Evolved - ((dt*0.5) * Cps[i]* Cps[i].hermitian_conj() * Evolved);
-			}	
-		}
-		//Now to calculate the different collapse probabilities
+		//calculate the different collapse probabilities
 		std::vector<double> cps_prob;
-
 		for (int i = 0; i < Cps.size();i++)
 		{
 			Qmatrix dpm = (Evolved.hermitian_conj() * Cps[i] * Cps[i].hermitian_conj() * Evolved);
 			//std::cout << dpm(0,0).real();
-			cps_prob.push_back(dpm(0,0).real() * dt);
+			cps_prob.push_back(dpm(0,0).real() * dt * gamma);
+			//std::cout << dpm(0,0).real() * dt << std::endl;
 		}
 		double deltaP = std::accumulate(cps_prob.begin(),cps_prob.end(),0.0);
+
+		if(j == 0)
+		{
+			Evolved = Evolved - ((_ONEI * dt) * H * inital);
+			for (int i = 0; i<Cps.size();i++)
+			{
+				Evolved = Evolved - ((dt*0.5*gamma) * Cps[i]* Cps[i].hermitian_conj() * inital);
+			}
+		}
+		else
+		{
+			Evolved = Evolved - ((_ONEI * dt) * H * Evolved);
+			for (int i = 0; i<Cps.size();i++)
+			{
+				Evolved = Evolved - ((dt*0.5*gamma) * Cps[i]* Cps[i].hermitian_conj() * Evolved);
+			}	
+		}
 
 		//Now produce the random number ( not using Rand as i needed a better psudeo random number henerator here)
 		std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -132,12 +141,13 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    //std::cout << dis(gen) << ' ';
 	    double r = dis(gen);
 	    // Now need to test weather ot not a jump wil occur.	
-
+	    
 	    if (deltaP < r) // No Jump has Occured
 	    {
 	    	// The state is now normalized and the whole process will start again
-	    	Evolved  = Evolved * (1/sqrt(1 - deltaP));
-	    	std::cout << (Evolved.hermitian_conj() * Evolved) << std::endl;
+	    	norm = Evolved.hermitian_conj() * Evolved;
+	    	Evolved  = Evolved * (1/sqrt(norm(0,0).real()));
+	    	
 	    }
 	    else // A Jump has therfore occured
 	    {
@@ -149,11 +159,10 @@ void mcSolve(Qmatrix& H,Qmatrix& inital,std::vector<Qmatrix>& Cps,double dt)
 	    	else
 	    	{
 	    		// if there is only 1 then we dont need to work out which jump occured
-	    		Evolved = Cps[0] *  Evolved * sqrt(dt / deltaP);
-	    		std::cout << "welp";
+	    		Evolved = Cps[0] *  Evolved * ((gamma * dt)/sqrt(deltaP));
 	    	}
 	    }
-	    std::cout << expect(Evolved,Expt).real() << std::endl;
+	    //std::cout << 1.0 - deltaP << "\n" << norm(0,0).real() << "\n------------\n";
 	    file << std::setprecision(10) <<  j << " " <<expect(Evolved,Expt).real() <<"\n"; 
 	}
 }

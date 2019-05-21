@@ -8,7 +8,7 @@ time = np.linspace(0,20,2000)
 
 psi0 = basis(2,1)
 
-data = mcsolve(H,psi0,time,[0.1*destroy(2).dag()],[sigmaz()])
+data = mcsolve(H,psi0,time,[1*destroy(2).dag()],[sigmaz()])
 
 with open("data.dat",'w') as f:
 	for j in range(0,len(time)):
