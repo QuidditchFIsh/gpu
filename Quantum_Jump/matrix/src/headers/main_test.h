@@ -10,4 +10,4 @@
 #include <time.h>
 
 
-void mcSolve(Qmatrix& H,Qmatrix& psi0,std::vector<Qmatrix>& Cps,double dt,double gamma);
+std::vector<double> mcSolve(Qmatrix& H,Qmatrix& psi0,std::vector<Qmatrix>& Cps,double dt,double gamma,int,int);
