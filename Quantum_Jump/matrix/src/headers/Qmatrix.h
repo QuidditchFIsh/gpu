@@ -2,6 +2,8 @@
 #include <vector>
 #include<complex>
 
+#ifndef Q_MATRIX
+#define Q_MATRIX
 
 class Qmatrix 
 {
@@ -79,3 +81,5 @@ public:
 	Qmatrix operator*(const std::complex<double>& d,const Qmatrix rhs);
 
 	std::complex<double> expect( Qmatrix& _state,  Qmatrix& _operator);
+
+#endif

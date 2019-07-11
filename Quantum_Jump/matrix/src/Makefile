@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -c -std=c++11
 LDFLAGS =
-SOURCES=Qmatrix.cpp operators.cpp main_test.cpp
+SOURCES=Qmatrix.cpp operators.cpp solvers.cpp main_test.cpp 
 OBJECTS=$(SOURCES:.cpp=.o)
 EXE=qJUMP
 

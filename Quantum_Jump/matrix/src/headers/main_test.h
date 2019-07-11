@@ -1,4 +1,5 @@
 #include "operators.h"
+#include "solvers.h"
 #include <iostream>
 #include <stdio.h>
 #include <numeric>
@@ -10,4 +11,3 @@
 #include <time.h>
 
 
-void mcSolve(Qmatrix& H,Qmatrix& psi0,std::vector<Qmatrix>& Cps,double dt,double gamma);
