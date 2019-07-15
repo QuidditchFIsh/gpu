@@ -10,5 +10,6 @@
 #include <iomanip>
 #include <time.h>
 
+std::complex<double> q1(double);
 
-
+std::complex<double> q1d(double);

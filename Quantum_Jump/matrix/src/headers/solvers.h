@@ -15,14 +15,18 @@ struct H_part;
 //typedef of the structure
 typedef struct H_part H_part;
 
-typedef double (*H_func_ptr_t)(double* t);
+typedef std::complex<double> (*H_func_ptr_t)(std::complex<double> t);
 
 struct H_part
 {
-	double H0;
-	H_func_ptr_t H_func_ptr
+	Qmatrix H0;
+	H_func_ptr_t H_func_ptr;
+
+	Qmatrix H_timeDep(std::complex<double> t) {return H0*H_func_ptr(t);}
 };
 
-void mcSolve(Qmatrix& H,Qmatrix& psi0,std::vector<Qmatrix>& Cps,double dt,double gamma);
+void mcSolve(Qmatrix& H,Qmatrix& ,std::vector<Qmatrix>& Cps,double dt,double gamma,int,int);
 
-void mcSolce_alt(Qmatrix& H,Qmatrix& psi0,std::vector<Qmatrix>& Cps,double dt,double gamma);
+void mcSolve(std::vector<H_part> H,Qmatrix& ,std::vector<Qmatrix>& Cps,double dt,double gamma,int,int);
+
+void mcSolce_alt(Qmatrix& H,Qmatrix& ,std::vector<Qmatrix>& Cps,double dt,double gamma,int,int);

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include<complex>
+#include <complex>
 
 #ifndef Q_MATRIX
 #define Q_MATRIX
